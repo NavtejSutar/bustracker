@@ -11,16 +11,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nexusbus.tracker.DTO.RouteDto;
+import com.nexusbus.tracker.DTO.StopDto;
 import com.nexusbus.tracker.Entities.BusStop;
 import com.nexusbus.tracker.Entities.Route;
 import com.nexusbus.tracker.Entities.RouteStop;
 import com.nexusbus.tracker.Repository.BusStopRepo;
-
-
-
 
 @RestController
 
@@ -41,6 +40,17 @@ public class BusStopController {
         Optional<BusStop> busStopOptional=busStopRepo.findById(stopId);
         return busStopOptional.map(busStop->ResponseEntity.ok(busStop))
         .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/search/stop")
+    public ResponseEntity<List<StopDto>> searchStop(@RequestParam String stopName){
+        List<BusStop> busStops=busStopRepo.findByStopNameContaining(stopName);
+        List<StopDto> list=new ArrayList<>();
+        for(BusStop bs: busStops){
+            StopDto currStop=new StopDto(bs.getStopId(),bs.getStopName(),bs.getStopLatitude(),bs.getStopLongitude());
+            list.add(currStop);
+        }
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/StopName/{stopName}")

@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nexusbus.tracker.DTO.RouteDto;
 import com.nexusbus.tracker.DTO.StopDto;
 import com.nexusbus.tracker.Entities.BusStop;
 import com.nexusbus.tracker.Entities.Route;
@@ -35,7 +37,7 @@ public class RouteController {
         return ResponseEntity.ok(list);
     }
     
-    @PostMapping("/admin/route")
+    @PostMapping("/a/route")
     public ResponseEntity<Route> postRoute(@RequestBody Route route) {
         try{
             Route result=routeRepo.save(route);
@@ -43,6 +45,18 @@ public class RouteController {
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+
+    @GetMapping("/search/route")
+    public ResponseEntity<List<RouteDto>> searchRoute(@RequestParam String routeName){
+        List<Route> routeList = routeRepo.findByRouteNameContaining(routeName);
+        List<RouteDto> list=new ArrayList<>();
+        for(Route rs: routeList){
+            RouteDto currRoute=new RouteDto(rs.getRouteId(),rs.getRouteName());
+            list.add(currRoute);
+        }
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/route/{routeId}")
@@ -63,7 +77,7 @@ public class RouteController {
         for(RouteStop rs : routeStops){
             BusStop stop=rs.getBusStop();
             StopDto newStop=new StopDto(
-                stop.getStopName(),stop.getStopLatitude(),stop.getStopLongitude()
+                stop.getStopId(),stop.getStopName(),stop.getStopLatitude(),stop.getStopLongitude()
             );
             result.add(newStop);
         }

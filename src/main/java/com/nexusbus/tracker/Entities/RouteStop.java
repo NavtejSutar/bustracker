@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RouteStop {
     @Id
-    @Column(name="route_stop_id")
+    @Column(name="route_stop_id") 
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer routeStopId;
     

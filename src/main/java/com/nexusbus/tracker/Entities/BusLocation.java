@@ -1,6 +1,6 @@
 package com.nexusbus.tracker.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,6 +31,6 @@ public class BusLocation {
 
     @OneToOne
     @JoinColumn(name="bus_trip_id" , unique=true)
-    @JsonIgnore
+    @JsonIgnoreProperties({"busLocation"})
     private BusTrip busTrip;
 }

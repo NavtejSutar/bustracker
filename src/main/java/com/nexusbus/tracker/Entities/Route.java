@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -40,7 +39,7 @@ public class Route {
     List<RouteStop> routeStops=new ArrayList<>();
 
     @OneToMany(mappedBy="route", cascade=CascadeType.ALL)
-    @JsonManagedReference("route-trip")
+    @JsonIgnoreProperties({"route"})
     private List<BusTrip> busTrips=new ArrayList<>();
 }
 

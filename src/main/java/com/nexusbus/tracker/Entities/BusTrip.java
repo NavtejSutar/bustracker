@@ -1,6 +1,6 @@
 package com.nexusbus.tracker.Entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,22 +26,23 @@ public class BusTrip {
 
     @ManyToOne
     @JoinColumn(name="bus_id", nullable=false)
-    @JsonBackReference("bus-trip")
+    @JsonIgnoreProperties({"busTrips"})
     private Bus bus;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
-    @JsonBackReference("user-trip")
+    @JsonIgnoreProperties({"busTrips"})
     private Users users;
 
     @ManyToOne
     @JoinColumn(name="route_id", nullable=false)
-    @JsonBackReference("route-trip")
+    @JsonIgnoreProperties({"busTrips","routeStop"})
     private Route route;
 
     @Column(name="active")
     private Boolean active;
 
     @OneToOne(mappedBy="busTrip")
+    @JsonIgnoreProperties({"busTrips"})
     private BusLocation busLocation;
 }

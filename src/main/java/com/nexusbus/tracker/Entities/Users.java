@@ -3,7 +3,7 @@ package com.nexusbus.tracker.Entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -42,6 +42,6 @@ public class Users {
     private String role;
 
     @OneToMany(mappedBy="users", cascade=CascadeType.ALL)
-    @JsonManagedReference("user-trip")
+    @JsonIgnoreProperties({"users"})
     private List<BusTrip> busTrips=new ArrayList<>();
 }

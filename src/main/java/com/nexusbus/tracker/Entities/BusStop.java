@@ -27,7 +27,7 @@ public class BusStop {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer stopId;
 
-    @Column(name="stop_name")
+    @Column(name="stop_name" , unique=true)
     private String stopName;
 
     @Column(name="stop_latitude")

@@ -1,12 +1,13 @@
 package com.nexusbus.tracker.Controller;
 
-import java.util.Optional;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.nexusbus.tracker.DTO.BusTripDto;
 import com.nexusbus.tracker.Entities.Bus;
@@ -19,6 +20,8 @@ import com.nexusbus.tracker.Repository.BusRepo;
 import com.nexusbus.tracker.Repository.BusTripRepo;
 import com.nexusbus.tracker.Repository.RouteRepo;
 import com.nexusbus.tracker.Repository.UsersRepo;
+
+import jakarta.transaction.Transactional;
 
 
 @RestController
@@ -43,19 +46,26 @@ public class BusTripController {
         this.busRepo=busRepo;
     }
 
-    @PostMapping("/busTrip")
+    @PostMapping("/driver/busTrip")
+    @Transactional
     public ResponseEntity<?> startBusTrip(
         @RequestBody BusTripDto busTripDto, Authentication authentication
     ) {
         String emailId=authentication.getName();
-        Optional<Users> usersOpt= usersRepo.findByEmailId(emailId);
-        Users users=usersOpt.get();
+        Users users = usersRepo.findByEmailId(emailId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "User not found"));
+        if(busTripRepo.existsByUsersAndActiveTrue(users)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Active User");
+        }
 
-        Optional<Route> routeOpt=routeRepo.findByRouteName(busTripDto.routeName());
-        Route route=routeOpt.get();
+        Route route = routeRepo.findByRouteName(busTripDto.routeName())
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Route not found"));
 
-        Optional<Bus> busOpt=busRepo.findByNumberPlate(busTripDto.numberPlate());
-        Bus bus=busOpt.get();
+        Bus bus = busRepo.findByNumberPlate(busTripDto.numberPlate())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Bus not found"));
 
         BusTrip busTrip=new BusTrip();
         busTrip.setUsers(users);
@@ -72,7 +82,19 @@ public class BusTripController {
 
         BusLocation busLocation= busLocationRepo.save(location);
 
-        return ResponseEntity.ok(newTrip);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newTrip);
     }
-    
+    @GetMapping("/driver/myBusTrip")
+    public ResponseEntity<?> getBusTrip(Authentication authentication){
+        String emailId=authentication.getName();
+        Users users = usersRepo.findByEmailId(emailId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "User not found"));
+        if(!busTripRepo.existsByUsersAndActiveTrue(users)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Active User");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+            busTripRepo.findByUsersAndActiveTrue(users)
+        );
+    }
 }

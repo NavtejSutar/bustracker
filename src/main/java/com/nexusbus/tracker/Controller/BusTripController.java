@@ -5,11 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.nexusbus.tracker.DTO.BusTripDto;
+import com.nexusbus.tracker.DTO.LocationDto;
 import com.nexusbus.tracker.Entities.Bus;
 import com.nexusbus.tracker.Entities.BusLocation;
 import com.nexusbus.tracker.Entities.BusTrip;
@@ -46,6 +48,11 @@ public class BusTripController {
         this.busRepo=busRepo;
     }
 
+    @GetMapping("/a/getAllBusTrips")
+    public ResponseEntity<?> getAllBusTrips(){
+        return ResponseEntity.ok(busTripRepo.findByActiveTrue());
+    }
+
     @PostMapping("/driver/busTrip")
     @Transactional
     public ResponseEntity<?> startBusTrip(
@@ -56,7 +63,7 @@ public class BusTripController {
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "User not found"));
         if(busTripRepo.existsByUsersAndActiveTrue(users)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Active User");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Active Trip");
         }
 
         Route route = routeRepo.findByRouteName(busTripDto.routeName())
@@ -91,10 +98,53 @@ public class BusTripController {
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "User not found"));
         if(!busTripRepo.existsByUsersAndActiveTrue(users)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Active User");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Active Trip");
         }
         return ResponseEntity.status(HttpStatus.OK).body(
             busTripRepo.findByUsersAndActiveTrue(users)
         );
     }
+
+    @PutMapping("/driver/endBusTrip")
+    public ResponseEntity<?> endBusTrip(Authentication authentication){
+        String emailId=authentication.getName();
+        Users users = usersRepo.findByEmailId(emailId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "User not found"));
+        if(!busTripRepo.existsByUsersAndActiveTrue(users)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Active Trip");
+        }
+        BusTrip trip=busTripRepo.findByUsersAndActiveTrue(users)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "User not found"));
+        trip.setActive(false);
+        busTripRepo.save(trip);
+        return ResponseEntity.ok("Trip ended successfully");
+    }
+
+    @PutMapping("/driver/busLocation")
+    @Transactional
+    public ResponseEntity<?> updateLocation(
+            @RequestBody LocationDto dto,
+            Authentication authentication) {
+
+        String emailId = authentication.getName();
+
+        Users users = usersRepo.findByEmailId(emailId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found"));
+
+        BusTrip trip = busTripRepo.findByUsersAndActiveTrue(users)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "No Active Trip"));
+
+        BusLocation location = trip.getBusLocation();
+
+        location.setBusLatitude(dto.latitude());
+        location.setBusLongitude(dto.longitude());
+
+        return ResponseEntity.ok("Location updated");
+    }
+
+    
 }

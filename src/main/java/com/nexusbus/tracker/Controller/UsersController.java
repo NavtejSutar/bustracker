@@ -39,7 +39,7 @@ public class UsersController {
                 savedUsers.getRole()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(usersDto);
-        }catch(DataIntegrityViolationException e){  //409 for not being unique
+        }catch(DataIntegrityViolationException e){  
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

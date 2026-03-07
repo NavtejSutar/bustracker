@@ -31,13 +31,13 @@ public class RouteController {
         this.routeRepo=routeRepo;
     }
 
-    @GetMapping("/route")
+    @GetMapping("/routes")
     public ResponseEntity<List<Route>> getAllRoutes() {
             List<Route> list=routeRepo.findAll();
         return ResponseEntity.ok(list);
     }
     
-    @PostMapping("/a/route")
+    @PostMapping("/admin/route")
     public ResponseEntity<Route> postRoute(@RequestBody Route route) {
         try{
             Route result=routeRepo.save(route);
@@ -85,7 +85,7 @@ public class RouteController {
     }
     
     
-    @PutMapping("route/{routeId}")
+    @PutMapping("/admin/route/{routeId}")
     public ResponseEntity<?> updateRoute(@PathVariable Integer routeId, @RequestBody Route route) {
         
         return routeRepo.findById(routeId)
@@ -96,7 +96,7 @@ public class RouteController {
             }).orElseGet(()->ResponseEntity.notFound().build());
     }
     
-    @DeleteMapping("/route/{routeId}")
+    @DeleteMapping("/admin/route/{routeId}")
     public ResponseEntity<?> deleteRoute(@PathVariable Integer routeId){
         return routeRepo.findById(routeId)
             .map(deleteRoute->{

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +24,7 @@ public class BusController {
         this.busRepo=busRepo;
     }
 
-    @PostMapping("/a/bus")
+    @PostMapping("/admin/bus")
     public ResponseEntity<?> addBus(@RequestBody Bus bus){
         try{
             Bus newBus= busRepo.save(bus);
@@ -34,6 +35,7 @@ public class BusController {
     }
 
     @GetMapping("/bus")
+    @PreAuthorize("hasAnyRole('admin', 'driver')")
     public ResponseEntity<?> searchBus(@RequestParam String bus) {
         List<Bus> list=busRepo.findByNumberPlateContaining(bus);
         return ResponseEntity.ok().body(list);

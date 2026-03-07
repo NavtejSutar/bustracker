@@ -1,7 +1,7 @@
 package com.nexusbus.tracker.Controller;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -69,14 +69,14 @@ public class BusStopController {
         }
         return ResponseEntity.ok(result);
     }
-    @PostMapping("/stop")
+    @PostMapping("/admin/stop")
     public ResponseEntity<BusStop> demo(
         @RequestBody BusStop busStop
     ) {
         return new ResponseEntity<>(busStopRepo.save(busStop),HttpStatus.CREATED);
     }
     
-    @DeleteMapping("/stops/{stopId}")
+    @DeleteMapping("/admin/stops/{stopId}")
     public ResponseEntity<BusStop> deleteBusStop(@PathVariable Integer stopId){
         busStopRepo.deleteById(stopId);
         return new ResponseEntity<>(HttpStatus.OK);

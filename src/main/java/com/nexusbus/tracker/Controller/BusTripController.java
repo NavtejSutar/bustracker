@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -48,9 +49,17 @@ public class BusTripController {
         this.busRepo=busRepo;
     }
 
-    @GetMapping("/a/getAllBusTrips")
+    @GetMapping("/admin/getAllBusTrips")
     public ResponseEntity<?> getAllBusTrips(){
         return ResponseEntity.ok(busTripRepo.findByActiveTrue());
+    }
+
+    @GetMapping("/busTrip")
+    public ResponseEntity<?> getBusTripByRoute(@RequestParam String routeName){
+        Route route = routeRepo.findByRouteName(routeName)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Route not found"));
+        return ResponseEntity.ok(busTripRepo.findByRouteAndActiveTrue(route));
     }
 
     @PostMapping("/driver/busTrip")
@@ -63,7 +72,7 @@ public class BusTripController {
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "User not found"));
         if(busTripRepo.existsByUsersAndActiveTrue(users)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Active Trip");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("There is a active trip");
         }
 
         Route route = routeRepo.findByRouteName(busTripDto.routeName())
@@ -87,7 +96,9 @@ public class BusTripController {
         location.setBusLatitude(null);
         location.setBusLongitude(null);
 
-        BusLocation busLocation= busLocationRepo.save(location);
+        busLocationRepo.save(location);
+        
+        busTrip.setBusLocation(location);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newTrip);
     }

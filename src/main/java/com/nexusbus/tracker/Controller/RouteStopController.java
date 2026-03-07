@@ -37,7 +37,7 @@ public class RouteStopController {
         return ResponseEntity.ok(routeStopRepo.findAll());
     }
 
-    @PostMapping("/route/{routeId}/addStop/{stopId}/{sequence}")
+    @PostMapping("/admin/route/{routeId}/addStop/{stopId}/{sequence}")
     public ResponseEntity<?> addOneStop(@PathVariable Integer routeId, @PathVariable Integer stopId,@PathVariable Integer sequence){
 
         if(routeStopRepo.existsByRoute_RouteIdAndBusStop_StopId(routeId, stopId)){
@@ -66,7 +66,7 @@ public class RouteStopController {
         return ResponseEntity.ok(routeStopRepo.findBySourceAndDestination(source, destination));
     }
 
-    @PostMapping("/route/stop")
+    @PostMapping("/admin/route/stop")
     public ResponseEntity<?> postRouteStop(@RequestBody RouteStop routeStop) {
         try {
             RouteStop routeStop1=routeStopRepo.save(routeStop);

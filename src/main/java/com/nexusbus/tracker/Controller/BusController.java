@@ -40,6 +40,12 @@ public class BusController {
         List<Bus> list=busRepo.findByNumberPlateContaining(bus);
         return ResponseEntity.ok().body(list);
     }
+
+    // In BusTripController.java
+@GetMapping("/admin/tripHistory")
+public ResponseEntity<?> getTripHistory() {
+    return ResponseEntity.ok(busTripRepo.findByActiveFalse());
+}
     
 
 }

@@ -157,5 +157,9 @@ public class BusTripController {
         return ResponseEntity.ok("Location updated");
     }
 
+    @GetMapping("/admin/tripHistory")
+    public ResponseEntity<?> getTripHistory(){
+        return ResponseEntity.ok(busTripRepo.findByActiveFalse());
+    }
     
 }

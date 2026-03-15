@@ -13,5 +13,6 @@ public interface BusTripRepo extends JpaRepository<BusTrip , Integer>{
     Boolean existsByUsersAndActiveTrue(Users users);
     Optional<BusTrip> findByUsersAndActiveTrue(Users users);
     List<BusTrip> findByActiveTrue();
+    List<BusTrip> findByActiveFalse();
     List<BusTrip> findByRouteAndActiveTrue(Route route);
 }

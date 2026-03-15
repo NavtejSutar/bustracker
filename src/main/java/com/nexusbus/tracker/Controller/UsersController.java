@@ -39,6 +39,7 @@ public class UsersController {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             Users savedUsers=usersRepo.save(user);
             UsersDto usersDto=new UsersDto(
+                savedUsers.getUserId(),
                 savedUsers.getFName(),
                 savedUsers.getLName(),
                 savedUsers.getEmailId(),
@@ -57,6 +58,7 @@ public class UsersController {
     public ResponseEntity<UsersDto> getUsersDetails(Authentication auth){
         Users users= usersRepo.findByEmailId(auth.getName()).orElseThrow();
         UsersDto userDetail=new UsersDto(
+            users.getUserId(),
             users.getFName(),
             users.getLName(),
             users.getEmailId(),
@@ -73,6 +75,7 @@ public class UsersController {
         updatedUser.setRole(role);
         usersRepo.save(updatedUser);
         UsersDto userDetail=new UsersDto(
+            updatedUser.getUserId(),
             updatedUser.getFName(),
             updatedUser.getLName(),
             updatedUser.getEmailId(),
@@ -87,6 +90,7 @@ public class UsersController {
         List<UsersDto> users = usersRepo.findAll()
                 .stream()
                 .map(user -> new UsersDto(
+                        user.getUserId(),
                         user.getFName(),
                         user.getLName(),
                         user.getEmailId(),

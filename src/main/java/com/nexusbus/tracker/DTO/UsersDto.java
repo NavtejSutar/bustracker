@@ -1,6 +1,7 @@
 package com.nexusbus.tracker.DTO;
 
 public record UsersDto(
+    int userId,
     String fname,
     String lname,
     String emailId,

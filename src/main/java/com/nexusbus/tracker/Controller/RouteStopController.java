@@ -4,12 +4,14 @@ import java.util.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.nexusbus.tracker.Entities.BusStop;
 import com.nexusbus.tracker.Entities.Route;
@@ -74,6 +76,14 @@ public class RouteStopController {
         }catch(Exception e) {
             return ResponseEntity.internalServerError().build();
         }        
+    }
+
+    @DeleteMapping("/admin/routeStop/{routeStopId}")
+    public ResponseEntity<?> deleteRouteStop(@PathVariable int routeStopId){
+        RouteStop routeStop=routeStopRepo.findById(routeStopId).orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "RouteStop not found"));;
+        routeStopRepo.delete(routeStop);
+        return ResponseEntity.ok("RouteStop Deleted Succesfully");
     }
     
 }
